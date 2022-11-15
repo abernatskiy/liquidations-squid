@@ -16,6 +16,7 @@ const processor = new EvmBatchProcessor()
 		filter: [[lendingPoolAbi.events['LiquidationCall(address,address,address,uint256,uint256,address,bool)'].topic]],
 		data: {
 			evmLog: {
+				id: true,
 				topics: true,
 				data: true
 			},
@@ -44,9 +45,10 @@ processor.run(new TypeormDatabase(), async (ctx) => {
 				].decode(i.evmLog)
 				const block = c.header.height
 				const hash = i.transaction.hash
+				const eventId = i.evmLog.id
 
 				liquidations.push(new LiquidationEvent({
-					id: hash,
+					id: eventId,
 					collateralAsset: collateralAsset,
 					debtAsset: debtAsset,
 					user: user,

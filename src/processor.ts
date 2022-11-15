@@ -1,6 +1,7 @@
-import {TypeormDatabase} from "@subsquid/typeorm-store";
+import {TypeormDatabase} from '@subsquid/typeorm-store'
 import {EvmBatchProcessor} from '@subsquid/evm-processor'
 import * as lendingPoolAbi from './abi/aave-lending-pool-v2'
+import {LiquidationEvent} from './model'
 
 // The so-called AAVE V2 (https://etherscan.io/address/0x7d2768de32b0b80b7a3454c06bdac94a69ddc7a9) - starts at 11362579
 // Tis' a proxy, Implementation is at 0xc6845a5c768bf8d7681249f8927877efda425baf
@@ -25,11 +26,10 @@ const processor = new EvmBatchProcessor()
 	})
 
 processor.run(new TypeormDatabase(), async (ctx) => {
+	const liquidations: LiquidationEvent[] = [];
+
 	for (let c of ctx.blocks) {
 		for (let i of c.items) {
-			// apply arbitrary data transformation logic here
-			// use ctx.store to persist the data
-			// ctx.log.info(i, "Next item:")
 			if (i.kind==='evmLog') {
 				const {
 					collateralAsset,
@@ -44,9 +44,23 @@ processor.run(new TypeormDatabase(), async (ctx) => {
 				].decode(i.evmLog)
 				const block = c.header.height
 				const hash = i.transaction.hash
-				console.log(`Liquidation ${hash} by ${user} detected at block ${block}`)
+
+				liquidations.push(new LiquidationEvent({
+					id: hash,
+					collateralAsset: collateralAsset,
+					debtAsset: debtAsset,
+					user: user,
+					debtToCover: debtToCover.toBigInt(),
+					liquidatedCollateralAmount: liquidatedCollateralAmount.toBigInt(),
+					liquidator: liquidator,
+					receiveAToken: receiveAToken,
+					block: BigInt(block),
+					hash: hash
+				}))
 			}
 		}
 	}
+
+	await ctx.store.save(liquidations)
 });
 

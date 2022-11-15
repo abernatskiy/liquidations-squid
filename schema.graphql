@@ -1,5 +1,12 @@
-type MyEntity @entity {
-  id: ID!
-  foo: String!
+type LiquidationEvent @entity {
+	id: ID!
+	collateralAsset: String! @index
+	debtAsset: String! @index
+	user: String! @index
+	debtToCover: BigInt!
+	liquidatedCollateralAmount: BigInt!
+	liquidator: String! @index
+	receiveAToken: Boolean!
+	block: BigInt!
+	hash: String! @index
 }
-

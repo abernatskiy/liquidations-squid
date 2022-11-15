@@ -17,19 +17,36 @@ const processor = new EvmBatchProcessor()
 			evmLog: {
 				topics: true,
 				data: true
+			},
+			transaction: {
+				hash: true
 			}
 		} as const
 	})
 
-
 processor.run(new TypeormDatabase(), async (ctx) => {
-  for (let c of ctx.blocks) {
-    for (let i of c.items) {
-      // apply arbitrary data transformation logic here
-      // use ctx.store to persist the data
-			console.log(i)
-      ctx.log.info(i, "Next item:")
-    }
-  }
+	for (let c of ctx.blocks) {
+		for (let i of c.items) {
+			// apply arbitrary data transformation logic here
+			// use ctx.store to persist the data
+			// ctx.log.info(i, "Next item:")
+			if (i.kind==='evmLog') {
+				const {
+					collateralAsset,
+					debtAsset,
+					user,
+					debtToCover,
+					liquidatedCollateralAmount,
+					liquidator,
+					receiveAToken
+				} = lendingPoolAbi.events[
+					'LiquidationCall(address,address,address,uint256,uint256,address,bool)'
+				].decode(i.evmLog)
+				const block = c.header.height
+				const hash = i.transaction.hash
+				console.log(`Liquidation ${hash} by ${user} detected at block ${block}`)
+			}
+		}
+	}
 });
 

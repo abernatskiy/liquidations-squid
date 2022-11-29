@@ -10,7 +10,7 @@ const processor = new EvmBatchProcessor()
 	.setBlockRange({from: 11362579})
 	.setDataSource({
 		chain: process.env.ETHEREUM_MAINNET_WSS,
-		archive: 'https://eth.archive.subsquid.io',
+		archive: 'https://eth-stage1.archive.subsquid.io',
 	})
 	.addLog('0x7d2768dE32b0b80b7a3454c06BdAc94A69DDc7A9', {
 		filter: [[lendingPoolAbi.events[

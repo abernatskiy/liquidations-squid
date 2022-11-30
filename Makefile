@@ -1,4 +1,4 @@
-process: migrate
+process:
 	@node -r dotenv/config lib/processor.js
 
 
@@ -10,8 +10,8 @@ serve:
 	@npx squid-graphql-server
 
 
-migrate:
-	@npx squid-typeorm-migration apply
+big-query-migrate:
+	bash -c "node -r dotenv/config scripts/big-query-migrate.js"
 
 
 migration:

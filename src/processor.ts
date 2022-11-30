@@ -1,7 +1,14 @@
 import {TypeormDatabase} from '@subsquid/typeorm-store'
 import {EvmBatchProcessor} from '@subsquid/evm-processor'
 import * as lendingPoolAbi from './abi/aave-lending-pool-v2'
-import {LiquidationEvent} from './model'
+import {BigQuery} from '@google-cloud/bigquery'
+import assert from 'assert'
+
+assert(process.env.GOOGLE_DATASET_ID, 'GOOGLE_DATASET_ID must be set')
+assert(process.env.GOOGLE_TABLE_ID, 'GOOGLE_TABLE_ID must be set')
+const datasetId: string = process.env.GOOGLE_DATASET_ID
+const tableId: string = process.env.GOOGLE_TABLE_ID
+console.log(`at processor.ts: dataset ${datasetId}, ${tableId}`)
 
 // The so-called AAVE V2 (0x7d2768de32b0b80b7a3454c06bdac94a69ddc7a9) - starts at 11362579
 // Tis' a proxy, implementation is at 0xc6845a5c768bf8d7681249f8927877efda425baf
@@ -27,8 +34,10 @@ const processor = new EvmBatchProcessor()
 		} as const
 	})
 
+const bigQuery = new BigQuery()
+
 processor.run(new TypeormDatabase(), async (ctx) => {
-	const liquidations: LiquidationEvent[] = [];
+	const liquidations: unknown[] = [];
 
 	for (let c of ctx.blocks) {
 		for (let i of c.items) {
@@ -46,23 +55,24 @@ processor.run(new TypeormDatabase(), async (ctx) => {
 				].decode(i.evmLog)
 				const block = c.header.height
 				const hash = i.transaction.hash
-				const eventId = i.evmLog.id
 
-				liquidations.push(new LiquidationEvent({
-					id: eventId,
+				liquidations.push({
 					collateralAsset: collateralAsset,
 					debtAsset: debtAsset,
 					user: user,
-					debtToCover: debtToCover.toBigInt(),
-					liquidatedCollateralAmount: liquidatedCollateralAmount.toBigInt(),
+					debtToCover: debtToCover.toBigInt().toString(),
+					liquidatedCollateralAmount: liquidatedCollateralAmount.toBigInt().toString(),
 					liquidator: liquidator,
 					receiveAToken: receiveAToken,
-					block: BigInt(block),
-					hash: hash
-				}))
+					block: block,
+					transactionHash: hash
+				})
 			}
 		}
 	}
 
-	await ctx.store.save(liquidations)
+	await bigQuery
+		.dataset(datasetId)
+		.table(tableId)
+		.insert(liquidations)
 });

@@ -8,30 +8,16 @@ assert(process.env.GOOGLE_DATASET_ID, 'GOOGLE_DATASET_ID must be set')
 assert(process.env.GOOGLE_TABLE_ID, 'GOOGLE_TABLE_ID must be set')
 const datasetId: string = process.env.GOOGLE_DATASET_ID
 const tableId: string = process.env.GOOGLE_TABLE_ID
-console.log(`at processor.ts: dataset ${datasetId}, ${tableId}`)
 
 // The so-called AAVE V2 (0x7d2768de32b0b80b7a3454c06bdac94a69ddc7a9) - starts at 11362579
 // Tis' a proxy, implementation is at 0xc6845a5c768bf8d7681249f8927877efda425baf
 
 const processor = new EvmBatchProcessor()
 	.setBlockRange({from: 11362579})
-	.setDataSource({
-		archive: 'https://eth-stage1.archive.subsquid.io',
-	})
+	.setDataSource({archive: 'https://eth-stage1.archive.subsquid.io'})
 	.addLog('0x7d2768dE32b0b80b7a3454c06BdAc94A69DDc7A9', {
-		filter: [[lendingPoolAbi.events[
-			'LiquidationCall(address,address,address,uint256,uint256,address,bool)'
-		].topic]],
-		data: {
-			evmLog: {
-				id: true,
-				topics: true,
-				data: true
-			},
-			transaction: {
-				hash: true
-			}
-		} as const
+		filter: [[lendingPoolAbi.events['LiquidationCall(address,address,address,uint256,uint256,address,bool)'].topic]],
+		data: { evmLog: { id: true, topics: true, data: true }, transaction: { hash: true } } as const
 	})
 
 const bigQuery = new BigQuery()
@@ -43,16 +29,9 @@ processor.run(new TypeormDatabase(), async (ctx) => {
 		for (let i of c.items) {
 			if (i.kind==='evmLog') {
 				const {
-					collateralAsset,
-					debtAsset,
-					user,
-					debtToCover,
-					liquidatedCollateralAmount,
-					liquidator,
-					receiveAToken
-				} = lendingPoolAbi.events[
-					'LiquidationCall(address,address,address,uint256,uint256,address,bool)'
-				].decode(i.evmLog)
+					collateralAsset, debtAsset, user, debtToCover,
+					liquidatedCollateralAmount, liquidator, receiveAToken
+				} = lendingPoolAbi.events['LiquidationCall(address,address,address,uint256,uint256,address,bool)'].decode(i.evmLog)
 				const block = c.header.height
 				const hash = i.transaction.hash
 

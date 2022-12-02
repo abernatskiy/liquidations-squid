@@ -22,8 +22,6 @@ const processor = new EvmBatchProcessor()
 		data: { evmLog: { id: true, topics: true, data: true }, transaction: { hash: true } } as const
 	})
 
-console.log(fs.readFileSync(`${__dirname}/../private-key.json`).toString())
-
 processor.run(new TypeormDatabase(), async (ctx) => {
 	const liquidations: unknown[] = [];
 

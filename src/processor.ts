@@ -3,6 +3,7 @@ import {EvmBatchProcessor} from '@subsquid/evm-processor'
 import * as lendingPoolAbi from './abi/aave-lending-pool-v2'
 import {BigQuery} from '@google-cloud/bigquery'
 import assert from 'assert'
+import {bigQuery} from './big-query'
 
 assert(process.env.GOOGLE_DATASET_ID, 'GOOGLE_DATASET_ID must be set')
 assert(process.env.GOOGLE_TABLE_ID, 'GOOGLE_TABLE_ID must be set')
@@ -19,8 +20,6 @@ const processor = new EvmBatchProcessor()
 		filter: [[lendingPoolAbi.events['LiquidationCall(address,address,address,uint256,uint256,address,bool)'].topic]],
 		data: { evmLog: { id: true, topics: true, data: true }, transaction: { hash: true } } as const
 	})
-
-const bigQuery = new BigQuery()
 
 processor.run(new TypeormDatabase(), async (ctx) => {
 	const liquidations: unknown[] = [];

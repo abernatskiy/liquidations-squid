@@ -14,7 +14,7 @@ const keyData = `
     "token_uri": "https://oauth2.googleapis.com/token",
     "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
     "client_x509_cert_url": "${process.env.GOOGLE_CLIENT_X509_CERT_URL}"
-  }
+}
 `
 
 if (process.env.DEV !== 'true') {

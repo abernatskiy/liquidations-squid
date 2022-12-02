@@ -25,8 +25,8 @@ if (process.env.DEV !== 'true') {
 	assert(process.env.GOOGLE_CLIENT_ID, 'GOOGLE_CLIENT_ID must be set')
 	assert(process.env.GOOGLE_CLIENT_X509_CERT_URL, 'GOOGLE_CLIENT_X509_CERT_URL must be set')
 
-	fs.writeFileSync(`${__dirname}/../assets/private-key.json`, keyData)
-	process.env.GOOGLE_APPLICATION_CREDENTIALS=`${__dirname}/../assets/private-key.json`
+	fs.writeFileSync(`${__dirname}/../private-key.json`, keyData)
+	process.env.GOOGLE_APPLICATION_CREDENTIALS=`${__dirname}/../private-key.json`
 }
 
 export const bigQuery = new BigQuery();

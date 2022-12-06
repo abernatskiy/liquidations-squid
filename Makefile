@@ -7,7 +7,7 @@ build:
 
 
 serve:
-	@npx squid-graphql-server
+	@npx squid-graphql-server --subscriptions
 
 
 migrate:

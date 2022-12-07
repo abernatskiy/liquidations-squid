@@ -1,5 +1,6 @@
 /node_modules
 /lib
+/csv/*.csv
 
 /**Versions.json
 

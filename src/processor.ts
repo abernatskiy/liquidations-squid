@@ -12,7 +12,7 @@ if (!fs.existsSync(csvPath)) {
 // Tis' a proxy, implementation is at 0xc6845a5c768bf8d7681249f8927877efda425baf
 const processor = new EvmBatchProcessor()
 	.setBlockRange({from: 11362579})
-	.setDataSource({archive: 'https://eth-stage1.archive.subsquid.io'})
+	.setDataSource({archive: 'https://eth-mainnet-v1-stage1.archive.subsquid.io'})
 	.addLog('0x7d2768dE32b0b80b7a3454c06BdAc94A69DDc7A9', {
 		filter: [[lendingPoolAbi.events['LiquidationCall(address,address,address,uint256,uint256,address,bool)'].topic]],
 		data: { evmLog: { id: true, topics: true, data: true }, transaction: { hash: true } } as const

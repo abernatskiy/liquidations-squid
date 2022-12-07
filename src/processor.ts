@@ -15,7 +15,7 @@ const processor = new EvmBatchProcessor()
 	.setBlockRange({from: 11362579})
 	.setDataSource({archive: 'https://eth-mainnet-v1-stage1.archive.subsquid.io'})
 	.addLog('0x7d2768dE32b0b80b7a3454c06BdAc94A69DDc7A9', {
-		filter: [[lendingPoolAbi.events['LiquidationCall(address,address,address,uint256,uint256,address,bool)'].topic]],
+		filter: [[lendingPoolAbi.events.LiquidationCall.topic]],
 		data: {
 			evmLog: { id: true, topics: true, data: true },
 			transaction: { hash: true }
@@ -30,13 +30,14 @@ processor.run(new TypeormDatabase(), async (ctx) => {
 			console.log(c.header)
 
 			if (i.kind==='evmLog') {
-				const {
+				let {
 					collateralAsset, debtAsset, user, debtToCover,
 					liquidatedCollateralAmount, liquidator, receiveAToken
-				} = lendingPoolAbi.events['LiquidationCall(address,address,address,uint256,uint256,address,bool)'].decode(i.evmLog)
-				const block = c.header.height
-				const hash = i.transaction.hash
-				const eventId = i.evmLog.id
+				} = lendingPoolAbi.events.LiquidationCall.decode(i.evmLog)
+				let block = c.header.height
+				let timestamp = c.header.timestamp
+				let hash = i.transaction.hash
+				let eventId = i.evmLog.id
 
 				liquidations.push(new LiquidationEvent({
 					id: eventId,
@@ -48,6 +49,7 @@ processor.run(new TypeormDatabase(), async (ctx) => {
 					liquidator: liquidator,
 					receiveAToken: receiveAToken,
 					block: BigInt(block),
+					timestamp: BigInt(timestamp),
 					hash: hash
 				}))
 			}

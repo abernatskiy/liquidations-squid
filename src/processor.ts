@@ -5,7 +5,7 @@ import * as fs from 'fs'
 
 const csvPath = 'aave-liquidations.csv'
 if (!fs.existsSync(csvPath)) {
-	fs.writeFileSync(csvPath, 'collateralAsset,debtAsset,user,debtToCover,liquidatedCollateralAmount,liquidator,receiveAToken,block,transactionHash\n');
+	fs.writeFileSync(csvPath, 'id,collateralAsset,debtAsset,user,debtToCover,liquidatedCollateralAmount,liquidator,receiveAToken,block,timestamp,transactionHash\n');
 }
 
 // The so-called AAVE V2 (0x7d2768de32b0b80b7a3454c06bdac94a69ddc7a9) - starts at 11362579
@@ -24,14 +24,16 @@ processor.run(new TypeormDatabase(), async (ctx) => {
 	for (let c of ctx.blocks) {
 		for (let i of c.items) {
 			if (i.kind==='evmLog') {
-				const { collateralAsset, debtAsset, user, debtToCover,
+				let eventId = i.evmLog.id
+				let { collateralAsset, debtAsset, user, debtToCover,
 					liquidatedCollateralAmount, liquidator, receiveAToken
 				} = lendingPoolAbi.events.LiquidationCall.decode(i.evmLog)
-				const block = c.header.height
-				const hash = i.transaction.hash
+				let block = c.header.height
+				let timestamp = c.header.timestamp
+				let hash = i.transaction.hash
 
-				csvWriter.write(`${collateralAsset},${debtAsset},${user},${debtToCover.toBigInt().toString()},`+
-					`${liquidatedCollateralAmount.toBigInt().toString()},${liquidator},${receiveAToken},${block},${hash}\n`)
+				csvWriter.write(`${eventId},${collateralAsset},${debtAsset},${user},${debtToCover.toBigInt().toString()},`+
+					`${liquidatedCollateralAmount.toBigInt().toString()},${liquidator},${receiveAToken},${block},${timestamp},${hash}\n`)
 			}
 		}
 	}

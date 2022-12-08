@@ -27,8 +27,6 @@ processor.run(new TypeormDatabase(), async (ctx) => {
 
 	for (let c of ctx.blocks) {
 		for (let i of c.items) {
-			console.log(c.header)
-
 			if (i.kind==='evmLog') {
 				let {
 					collateralAsset, debtAsset, user, debtToCover,

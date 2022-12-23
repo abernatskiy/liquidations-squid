@@ -1,0 +1,14 @@
+manifestVersion: subsquid.io/v0.1
+name: aave-v2-liquidations
+version: 1
+description: |-
+  A squid that indexes liquidation events on AAVE V2
+build:
+
+deploy:
+  addons:
+    postgres:
+  processor:
+    cmd: [ "node", "lib/processor" ]
+  api:
+    cmd: [ "npx", "squid-graphql-server", "--dumb-cache", "in-memory", "--dumb-cache-ttl", "1000", "--dumb-cache-size", "100", "--dumb-cache-max-age", "1000" ]

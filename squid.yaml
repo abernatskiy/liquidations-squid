@@ -1,8 +1,8 @@
 manifestVersion: subsquid.io/v0.1
-name: aave-v2-liquidations
+name: aave-v2-liquidations-ws
 version: 1
 description: |-
-  A squid that indexes liquidation events on AAVE V2
+  A squid that indexes liquidation events on AAVE V2 and serves the resulting data via GraphQL over Websocker
 build:
 
 deploy:

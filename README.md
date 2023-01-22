@@ -23,4 +23,4 @@ Then start the GraphQL server:
 $ make serve
 ```
 
-GraphQL playground should be available at [localhost:4350](http://localhost:4350).
+GraphQL playground should be available at [localhost:4350/graphql](http://localhost:4350/graphql).

@@ -20,7 +20,7 @@ $ make process # begins data ingestion
 Then start the GraphQL server:
 
 ```bash
-make serve
+$ make serve
 ```
 
 GraphQL playground should be available at [localhost:4350](http://localhost:4350).

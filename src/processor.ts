@@ -13,7 +13,7 @@ import {LiquidationEvent} from './model'
 
 const processor = new EvmBatchProcessor()
 	.setBlockRange({from: 11362579})
-	.setDataSource({archive: 'https://eth-mainnet-v1-stage1.archive.subsquid.io'})
+	.setDataSource({archive: 'https://eth.archive.subsquid.io'})
 	.addLog('0x7d2768dE32b0b80b7a3454c06BdAc94A69DDc7A9', {
 		filter: [[lendingPoolAbi.events.LiquidationCall.topic]],
 		data: {

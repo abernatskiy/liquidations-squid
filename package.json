@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@ethersproject/abi": "^5.7.0",
+    "@subsquid/archive-registry": "^2.1.9",
     "@subsquid/big-decimal": "^0.0.0",
     "@subsquid/evm-processor": "^0.3.3",
     "@subsquid/evm-typegen": "2.1.1",

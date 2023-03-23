@@ -2,7 +2,7 @@ manifestVersion: subsquid.io/v0.1
 name: aave-v2-liquidations-wss
 version: 1
 description: |-
-  A squid that indexes liquidation events on AAVE V2 and serves the resulting data via GraphQL over WSS
+  A squid that indexes liquidation events on AAVE V2 and serves the resulting data via GraphQL over HTTP
 build:
 
 deploy:
@@ -11,4 +11,4 @@ deploy:
   processor:
     cmd: [ "node", "lib/processor" ]
   api:
-    cmd: [ "npx", "squid-graphql-server", "--subscriptions", "--dumb-cache", "in-memory", "--dumb-cache-ttl", "1000", "--dumb-cache-size", "100", "--dumb-cache-max-age", "1000" ]
+    cmd: [ "npx", "squid-graphql-server", "--dumb-cache", "in-memory", "--dumb-cache-ttl", "1000", "--dumb-cache-size", "100", "--dumb-cache-max-age", "1000" ]
